@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#111827">
+<title>PocketTools</title>
+
+<style>
+:root {
+  --bg:#f3f5fa;
+  --panel:#fff;
+  --ink:#182033;
+  --muted:#68738a;
+  --line:#e4e8f0;
+  --accent:#6657e8;
+  --soft:#eeecff;
+}
+
+* { box-sizing:border-box }
+
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font:15px/1.5 system-ui,Arial,sans-serif;
+}
+
+header {
+  background:#111827;
+  color:white;
+  padding:22px 18px;
+}
+
+header h1 { margin:0;font-size:27px }
+header p { margin:4px 0 0;color:#b8c1d3;font-size:13px }
+
+main { max-width:850px;margin:22px auto;padding:0 15px 40px }
+
+/* HOME SCREEN */
+.home-grid {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  grid-template-rows:repeat(6,minmax(100px,auto));
+  grid-auto-flow:column;
+  gap:12px;
+}
+
+.tool-card {
+  background:white;
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:15px 5px;
+  color:var(--ink);
+  font-size:14px;
+  font-weight:700;
+  cursor:pointer;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  box-shadow:0 3px 12px #19233a08;
+}
+
+.tool-card .emoji { font-size:27px }
+.tool-card:active { background:var(--soft);transform:scale(.97) }
+
+/* TOOL PANELS */
+.panel {
+  display:none;
+  background:white;
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:20px;
+}
+
+.panel.active { display:block }
+
+.back-btn {
+  background:var(--soft);
+  color:#4537b9;
+  border:0;
+  padding:10px 15px;
+  border-radius:10px;
+  font-weight:700;
+  margin-bottom:18px;
+  cursor:pointer;
+}
+
+h2 { font-size:21px;margin:0 0 5px }
+.sub { color:var(--muted);font-size:13px;margin:0 0 20px }
+
+.grid {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px;
+}
+
+label { display:block;font-size:13px;font-weight:650;margin-bottom:6px }
+
+input,select,textarea {
+  width:100%;
+  padding:11px;
+  border:1px solid #dce1eb;
+  border-radius:10px;
+  font:inherit;
+  background:white;
+  color:var(--ink);
+}
+
+input[type=checkbox] { width:auto }
+textarea { min-height:100px }
+
+.actions {
+  display:flex;
+  gap:9px;
+  flex-wrap:wrap;
+  margin-top:16px;
+}
+
+.primary,.secondary {
+  border:0;
+  border-radius:10px;
+  padding:11px 15px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.primary { background:var(--accent);color:white }
+.secondary { background:var(--soft);color:#4537b9 }
+
+.result {
+  margin-top:16px;
+  padding:14px;
+  border-radius:12px;
+  background:#f2f4fa;
+  border:1px solid var(--line);
+  overflow-wrap:anywhere;
+}
+
+.result strong { font-size:20px }
+.muted { color:var(--muted);font-size:13px }
+.color-preview { height:85px;border-radius:13px;margin-top:12px }
+
+.swatches {
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:8px;
+  margin-top:12px;
+}
+
+.swatch { height:50px;border:1px solid #ddd;border-radius:9px }
+
+.course {
+  display:grid;
+  grid-template-columns:1fr 75px 65px 35px;
+  gap:7px;
+  margin:9px 0;
+}
+
+.course button {
+  border:0;
+  background:#ffecef;
+  color:#b32c45;
+  border-radius:8px;
+}
+
+#qrCanvas { max-width:100%;height:auto }
+.qrwrap { display:flex;justify-content:center;margin-top:15px }
+footer { text-align:center;color:var(--muted);font-size:12px;margin:25px 0 }
+
+/* DARK MODE */
+body[data-theme="dark"] {
+  --bg:#0b1220;
+  --panel:#111827;
+  --ink:#f1f5f9;
+  --muted:#a0aec0;
+  --line:#293449;
+  --soft:#29264f;
+}
+
+body[data-theme="dark"] .tool-card,
+body[data-theme="dark"] .panel {
+  background:var(--panel);
+  color:var(--ink);
+}
+
+body[data-theme="dark"] input,
+body[data-theme="dark"] select,
+body[data-theme="dark"] textarea {
+  background:#1e293b;
+  color:var(--ink);
+  border-color:#374151;
+}
+
+body[data-theme="dark"] .result {
+  background:#1e293b;
+  border-color:var(--line);
+  color:var(--ink);
+}
+
+body[data-theme="dark"] .back-btn,
+body[data-theme="dark"] .secondary {
+  background:var(--soft);
+  color:#c4baff;
+}
+
+body[data-theme="dark"] .swatch {
+  border-color:#475569;
+}
+
+.theme-toggle {
+  margin-top:12px;
+  padding:9px 14px;
+  border:1px solid #64748b;
+  border-radius:10px;
+  background:transparent;
+  color:white;
+  font-weight:700;
+  cursor:pointer;
+}
+
+@media(max-width:600px) {
+  .grid { grid-template-columns:1fr }
+  .panel { padding:16px }
+  .home-grid { gap:9px }
+  .tool-card { min-height:95px;font-size:13px }
+  .course { grid-template-columns:1fr 65px 55px 30px }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>✦ PocketTools</h1>
+  <p>Easy to use for everyday problems.</p>
+  <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">🌙 Dark mode</button>
+</header>
+
+<main>
+
+<!-- HOME SCREEN -->
+<div class="home-grid" id="homeGrid">
+<button class="tool-card" data-page="discount"><span class="emoji">🏷️</span>Discount</button>
+<button class="tool-card" data-page="percentage"><span class="emoji">％</span>Percentage</button>
+<button class="tool-card" data-page="tip"><span class="emoji">💵</span>Tip calculator</button>
+<button class="tool-card" data-page="bmi"><span class="emoji">⚖️</span>BMI calculator</button>
+<button class="tool-card" data-page="age"><span class="emoji">🎂</span>Age calculator</button>
+<button class="tool-card" data-page="loan"><span class="emoji">🏦</span>Loan calculator</button>
+<button class="tool-card" data-page="units"><span class="emoji">📏</span>Unit converter</button>
+<button class="tool-card" data-page="password"><span class="emoji">🔐</span>Password generator</button>
+<button class="tool-card" data-page="words"><span class="emoji">📝</span>Word counter</button>
+<button class="tool-card" data-page="qr"><span class="emoji">▦</span>QR maker</button>
+<button class="tool-card" data-page="color"><span class="emoji">🎨</span>Colour maker</button>
+<button class="tool-card" data-page="gpa"><span class="emoji">🎓</span>GPA calculator</button>
+</div>
+
+<!-- 1 DISCOUNT -->
+<section class="panel" id="discount">
+<h2>Discount calculator</h2>
+<p class="sub">Calculate sale price and savings.</p>
+<div class="grid">
+<div><label>Original price</label><input id="dPrice" type="number" placeholder="5000"></div>
+<div><label>Discount (%)</label><input id="dPercent" type="number" placeholder="20"></div>
+</div>
+<div class="actions"><button class="primary" onclick="discountCalc()">Calculate</button></div>
+<div class="result" id="dResult">Your result will appear here.</div>
+</section>
+
+<!-- 2 PERCENTAGE -->
+<section class="panel" id="percentage">
+<h2>Percentage calculator</h2>
+<p class="sub">Find the percentage of a number.</p>
+<div class="grid">
+<div><label>Amount</label><input id="pValue" type="number" placeholder="1000"></div>
+<div><label>Percentage (%)</label><input id="pTotal" type="number" placeholder="4"></div>
+</div>
+<div class="actions"><button class="primary" onclick="percentageCalc()">Calculate</button></div>
+<div class="result" id="pResult">Your result will appear here.</div>
+</section>
+
+<!-- 3 TIP -->
+<section class="panel" id="tip">
+<h2>Tip calculator</h2>
+<p class="sub">Split a bill and calculate the tip.</p>
+<div class="grid">
+<div><label>Bill amount</label><input id="tBill" type="number"></div>
+<div><label>Tip (%)</label><input id="tPercent" type="number" value="10"></div>
+<div><label>Number of people</label><input id="tPeople" type="number" value="1"></div>
+</div>
+<div class="actions"><button class="primary" onclick="tipCalc()">Calculate</button></div>
+<div class="result" id="tResult">Your result will appear here.</div>
+</section>
+
+<!-- 4 BMI -->
+<section class="panel" id="bmi">
+<h2>BMI calculator</h2>
+<p class="sub">Calculate your body mass index.</p>
+<div class="grid">
+<div><label>Weight (kg)</label><input id="bWeight" type="number"></div>
+<div><label>Height (cm)</label><input id="bHeight" type="number"></div>
+</div>
+<div class="actions"><button class="primary" onclick="bmiCalc()">Calculate BMI</button></div>
+<div class="result" id="bResult">Your result will appear here.</div>
+<p class="muted">BMI is a rough screening measure, not a diagnosis.</p>
+</section>
+
+<!-- 5 AGE -->
+<section class="panel" id="age">
+<h2>Age calculator</h2>
+<p class="sub">Find your age in years, months and days.</p>
+<div class="grid">
+<div><label>Date of birth</label><input id="birthDate" type="date"></div>
+<div><label>Calculate age on</label><input id="ageDate" type="date"></div>
+</div>
+<div class="actions"><button class="primary" onclick="ageCalc()">Calculate age</button></div>
+<div class="result" id="aResult">Your result will appear here.</div>
+</section>
+
+<!-- 6 LOAN -->
+<section class="panel" id="loan">
+<h2>Loan calculator</h2>
+<p class="sub">Estimate monthly loan repayments.</p>
+<div class="grid">
+<div><label>Loan amount</label><input id="lAmount" type="number"></div>
+<div><label>Annual interest rate (%)</label><input id="lRate" type="number" step=".01"></div>
+<div><label>Loan term (years)</label><input id="lYears" type="number" step=".1"></div>
+</div>
+<div class="actions"><button class="primary" onclick="loanCalc()">Calculate</button></div>
+<div class="result" id="lResult">Your result will appear here.</div>
+<p class="muted">Actual lender fees may differ.</p>
+</section>
+
+<!-- 7 UNIT CONVERTER -->
+<section class="panel" id="units">
+<h2>Unit converter</h2>
+<p class="sub">Convert length, weight and temperature.</p>
+<div class="grid">
+<div><label>Category</label>
+<select id="uCategory" onchange="updateUnits()">
+<option value="length">Length</option>
+<option value="weight">Weight</option>
+<option value="temp">Temperature</option>
+</select></div>
+<div><label>Value</label><input id="uValue" type="number" value="1"></div>
+<div><label>From</label><select id="uFrom"></select></div>
+<div><label>To</label><select id="uTo"></select></div>
+</div>
+<div class="actions"><button class="primary" onclick="unitCalc()">Convert</button></div>
+<div class="result" id="uResult">Your result will appear here.</div>
+</section>
+
+<!-- 8 PASSWORD -->
+<section class="panel" id="password">
+<h2>Password generator</h2>
+<p class="sub">Create a random password on your device.</p>
+<div class="grid">
+<div><label>Password length</label><input id="pwLength" type="number" min="4" max="64" value="16"></div>
+<div>
+<label>Character options</label>
+<label><input id="pwUpper" type="checkbox" checked> Uppercase</label>
+<label><input id="pwLower" type="checkbox" checked> Lowercase</label>
+<label><input id="pwNumbers" type="checkbox" checked> Numbers</label>
+<label><input id="pwSymbols" type="checkbox" checked> Symbols</label>
+</div>
+</div>
+<div class="actions">
+<button class="primary" onclick="passwordCalc()">Generate password</button>
+<button class="secondary" onclick="copyText('pwResult')">Copy</button>
+</div>
+<div class="result" id="pwResult">Your password will appear here.</div>
+</section>
+
+<!-- 9 WORD COUNTER -->
+<section class="panel" id="words">
+<h2>Word counter</h2>
+<p class="sub">Count words, characters, sentences and paragraphs.</p>
+<label>Enter your text</label>
+<textarea id="wordText" oninput="wordCalc()" placeholder="Start typing here..."></textarea>
+<div class="result" id="wordResult">Words: 0 · Characters: 0 · Sentences: 0 · Paragraphs: 0</div>
+</section>
+
+<!-- 10 QR MAKER -->
+<section class="panel" id="qr">
+<h2>QR code maker</h2>
+<p class="sub">Create a QR code on your device.</p>
+<label>Text or URL</label>
+<textarea id="qrText" placeholder="Enter text or a website address..."></textarea>
+<div class="actions">
+<button class="primary" onclick="makeQR()">Generate QR code</button>
+<button class="secondary" onclick="downloadQR()">Download PNG</button>
+</div>
+<div class="qrwrap"><canvas id="qrCanvas"></canvas></div>
+<p class="muted" id="qrStatus">Enter text to create a QR code.</p>
+</section>
+
+<!-- 11 COLOUR MAKER -->
+<section class="panel" id="color">
+<h2>Colour maker</h2>
+<p class="sub">Explore HEX, RGB and HSL colours.</p>
+<div class="grid">
+<div><label>Choose colour</label><input id="colourInput" type="color" value="#6657e8" oninput="showColor()"></div>
+<div><label>HEX value</label><input id="hexValue" value="#6657e8" oninput="hexChanged()"></div>
+</div>
+<div class="color-preview" id="colorPreview"></div>
+<div class="result" id="colorValues"></div>
+<div class="actions">
+<button class="secondary" onclick="copyValue('hexValue')">Copy HEX</button>
+<button class="secondary" onclick="copyColor('rgb')">Copy RGB</button>
+<button class="secondary" onclick="copyColor('hsl')">Copy HSL</button>
+</div>
+<label style="margin-top:18px">Quick palette</label>
+<div class="swatches" id="swatches"></div>
+</section>
+
+<!-- 12 GPA -->
+<section class="panel" id="gpa">
+<h2>GPA calculator</h2>
+<p class="sub">Calculate your course GPA.</p>
+<div class="grid">
+<div><label>Grading scale</label>
+<select id="gScale" onchange="refreshGrades()">
+<option value="5">5-point scale</option>
+<option value="4">4-point scale</option>
+</select></div>
+<div><label>Calculation</label>
+<select id="gMode">
+<option value="weighted">Credit-weighted GPA</option>
+<option value="simple">Simple average</option>
+</select></div>
+</div>
+<div style="display:flex;justify-content:space-between;margin-top:18px;align-items:center">
+<strong>Courses</strong>
+<button class="secondary" onclick="addCourse()">+ Add course</button>
+</div>
+<div id="courses"></div>
+<div class="actions">
+<button class="primary" onclick="gpaCalc()">Calculate GPA</button>
+<button class="secondary" onclick="resetCourses()">Reset</button>
+</div>
+<div class="result" id="gResult">Add courses to calculate GPA.</div>
+</section>
+
+<footer>PocketTools · Private, local and offline</footer>
+</main>
+
+<script>
+"use strict";
+
+const $=id=>document.getElementById(id);
+const num=id=>Number($(id).value);
+const money=n=>Number(n).toLocaleString(undefined,{maximumFractionDigits:2});
+
+function show(id,html){$(id).innerHTML=html}
+function valid(...v){return v.every(Number.isFinite)}
+
+/* DARK MODE */
+function toggleTheme(){
+ const dark=document.body.dataset.theme!=="dark";
+
+ document.body.dataset.theme=dark?"dark":"light";
+
+ $("themeToggle").textContent=dark
+  ?"☀️ Light mode"
+  :"🌙 Dark mode";
+}
+
+/* COPY */
+function copyString(s){
+ if(navigator.clipboard&&window.isSecureContext){
+  navigator.clipboard.writeText(s).then(()=>alert("Copied!")).catch(()=>fallbackCopy(s));
+ }else fallbackCopy(s);
+}
+
+function fallbackCopy(s){
+ const t=document.createElement("textarea");
+ t.value=s;
+ document.body.appendChild(t);
+ t.select();
+
+ try{
+  document.execCommand("copy");
+  alert("Copied!");
+ }catch(e){
+  alert("Copy failed.");
+ }
+
+ t.remove();
+}
+
+function copyText(id){copyString($(id).innerText)}
+function copyValue(id){copyString($(id).value)}
+
+/* NAVIGATION */
+const homeGrid=$("homeGrid");
+
+homeGrid.addEventListener("click",e=>{
+ const b=e.target.closest("[data-page]");
+ if(!b)return;
+
+ homeGrid.style.display="none";
+
+ document.querySelectorAll(".panel").forEach(p=>{
+  p.classList.toggle("active",p.id===b.dataset.page);
+ });
+
+ window.scrollTo(0,0);
+});
+
+document.querySelectorAll(".panel").forEach(panel=>{
+ const b=document.createElement("button");
+
+ b.className="back-btn";
+ b.textContent="← Back to PocketTools";
+
+ b.onclick=()=>{
+  panel.classList.remove("active");
+  homeGrid.style.display="grid";
+  window.scrollTo(0,0);
+ };
+
+ panel.prepend(b);
+});
+
+/* DISCOUNT */
+function discountCalc(){
+ const p=num("dPrice"),d=num("dPercent");
+
+ if(!valid(p,d)||p<0||d<0||d>100)
+  return show("dResult","Enter a valid price and discount from 0 to 100%.");
+
+ const s=p*d/100;
+
+ show("dResult",`<strong>Final price: ${money(p-s)}</strong><br>You save ${money(s)} (${d}% off).`);
+}
+
+/* PERCENTAGE */
+function percentageCalc(){
+ const amount=num("pValue");
+ const percent=num("pTotal");
+
+ if(!valid(amount,percent)||amount<0||percent<0)
+  return show("pResult","Enter valid numbers.");
+
+ const result=amount*percent/100;
+
+ show("pResult",`
+  <strong>Result: ${money(result)}</strong>
+  <br>${percent}% of ${money(amount)} = ${money(result)}
+ `);
+}
+
+/* TIP */
+function tipCalc(){
+ const b=num("tBill"),p=num("tPercent"),n=num("tPeople");
+
+ if(!valid(b,p,n)||b<0||p<0||n<1)
+  return show("tResult","Enter valid values.");
+
+ const tip=b*p/100,total=b+tip;
+
+ show("tResult",`<strong>${money(total/n)} per person</strong><br>Tip: ${money(tip)}<br>Total bill: ${money(total)}`);
+}
+
+/* BMI */
+function bmiCalc(){
+ const w=num("bWeight"),h=num("bHeight")/100;
+
+ if(!valid(w,h)||w<=0||h<=0)
+  return show("bResult","Enter valid weight and height.");
+
+ const v=w/(h*h);
+
+ const cat=v<18.5?"Underweight":v<25?"Healthy weight":v<30?"Overweight":"Obesity range";
+
+ show("bResult",`<strong>BMI: ${v.toFixed(1)}</strong><br>Category: ${cat}`);
+}
+
+/* AGE */
+$("ageDate").value=new Date().toISOString().slice(0,10);
+
+function ageCalc(){
+ const birth=$("birthDate").value,end=$("ageDate").value;
+
+ if(!birth||!end)
+  return show("aResult","Select both dates.");
+
+ let a=new Date(birth+"T12:00:00"),b=new Date(end+"T12:00:00");
+
+ if(isNaN(a)||isNaN(b)||a>b)
+  return show("aResult","Enter valid dates.");
+
+ let y=b.getFullYear()-a.getFullYear();
+ let m=b.getMonth()-a.getMonth();
+ let d=b.getDate()-a.getDate();
+
+ if(d<0){
+  m--;
+  d+=new Date(b.getFullYear(),b.getMonth(),0).getDate();
+ }
+
+ if(m<0){
+  y--;
+  m+=12;
+ }
+
+ show("aResult",`<strong>${y} years, ${m} months, ${d} days</strong><br>Total days: ${Math.floor((b-a)/86400000).toLocaleString()}`);
+}
+
+/* LOAN */
+function loanCalc(){
+ const a=num("lAmount"),rate=num("lRate"),years=num("lYears");
+
+ if(!valid(a,rate,years)||a<=0||rate<0||years<=0)
+  return show("lResult","Enter valid loan details.");
+
+ const n=Math.round(years*12),r=rate/1200;
+ const pay=r===0?a/n:a*r/(1-Math.pow(1+r,-n));
+
+ show("lResult",`<strong>Monthly payment: ${money(pay)}</strong><br>Total repayment: ${money(pay*n)}<br>Total interest: ${money(pay*n-a)}`);
+}
+
+/* UNIT CONVERTER */
+const unitSets={
+ length:{m:1,km:1000,cm:.01,mm:.001,mi:1609.344,yd:.9144,ft:.3048,in:.0254},
+ weight:{kg:1,g:.001,mg:.000001,lb:.45359237,oz:.028349523125},
+ temp:{C:1,F:1,K:1}
+};
+
+function updateUnits(){
+ const u=Object.keys(unitSets[$("uCategory").value]);
+
+ $("uFrom").innerHTML=u.map(x=>`<option>${x}</option>`).join("");
+ $("uTo").innerHTML=u.map(x=>`<option>${x}</option>`).join("");
+
+ $("uTo").selectedIndex=Math.min(1,u.length-1);
+}
+
+function unitCalc(){
+ const cat=$("uCategory").value,v=num("uValue");
+ const f=$("uFrom").value,t=$("uTo").value;
+
+ if(!Number.isFinite(v))
+  return show("uResult","Enter a valid value.");
+
+ let r;
+
+ if(cat==="temp"){
+  const c=f==="C"?v:f==="F"?(v-32)*5/9:v-273.15;
+  r=t==="C"?c:t==="F"?c*9/5+32:c+273.15;
+ }else{
+  r=v*unitSets[cat][f]/unitSets[cat][t];
+ }
+
+ show("uResult",`<strong>${Number(r.toPrecision(10)).toLocaleString()} ${t}</strong><br>${v} ${f} converted to ${t}.`);
+}
+
+updateUnits();
+
+/* PASSWORD */
+function passwordCalc(){
+ const len=Math.floor(num("pwLength"));
+
+ if(!Number.isInteger(len)||len<4||len>64)
+  return show("pwResult","Choose a length from 4 to 64.");
+
+ let chars="";
+
+ if($("pwUpper").checked)chars+="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+ if($("pwLower").checked)chars+="abcdefghijklmnopqrstuvwxyz";
+ if($("pwNumbers").checked)chars+="0123456789";
+ if($("pwSymbols").checked)chars+="!@#$%^&*()-_=+[]{}?";
+
+ if(!chars)
+  return show("pwResult","Select at least one character type.");
+
+ let out="";
+ const a=new Uint32Array(len);
+
+ if(window.crypto&&crypto.getRandomValues)
+  crypto.getRandomValues(a);
+ else
+  for(let i=0;i<len;i++)a[i]=Math.floor(Math.random()*4294967296);
+
+ for(let i=0;i<len;i++)
+  out+=chars[a[i]%chars.length];
+
+ show("pwResult",`<strong style="font-size:17px">${out.replace(/&/g,"&amp;").replace(/</g,"&lt;")}</strong>`);
+}
+
+/* WORD COUNTER */
+function wordCalc(){
+ const raw=$("wordText").value,s=raw.trim();
+
+ const words=s?s.split(/\s+/).length:0;
+ const sentences=s?(s.match(/[.!?]+(?=\s|$)/g)||[]).length:0;
+ const paragraphs=s?s.split(/\n\s*\n/).filter(x=>x.trim()).length:0;
+
+ show("wordResult",`<strong>${words} words</strong><br>Characters: ${raw.length} · Sentences: ${sentences} · Paragraphs: ${paragraphs}`);
+}
+
+/* QR CODE GENERATOR */
+function gfMul(x,y){
+ let z=0;
+
+ for(let i=7;i>=0;i--){
+  z=(z<<1)^((z>>>7)*0x11d);
+  if((y>>>i)&1)z^=x;
+ }
+
+ return z;
+}
+
+function rsGenerator(n){
+ let g=[1],root=1;
+
+ for(let i=0;i<n;i++){
+  let q=Array(g.length+1).fill(0);
+
+  for(let j=0;j<g.length;j++){
+   q[j]^=g[j];
+   q[j+1]^=gfMul(g[j],root);
+  }
+
+  g=q;
+  root=gfMul(root,2);
+ }
+
+ return g;
+}
+
+function rsRemainder(data,n){
+ const g=rsGenerator(n),r=Array(n).fill(0);
+
+ for(const b of data){
+  const f=b^r[0];
+
+  r.shift();
+  r.push(0);
+
+  for(let i=0;i<n;i++)
+   r[i]^=gfMul(g[i+1],f);
+ }
+
+ return r;
+}
+
+function qrBits(bytes,dc,ec){
+ let bits=[];
+
+ const put=(v,n)=>{
+  for(let i=n-1;i>=0;i--)
+   bits.push((v>>>i)&1);
+ };
+
+ put(4,4);
+ put(bytes.length,8);
+
+ for(const b of bytes)put(b,8);
+
+ const cap=dc*8;
+
+ for(let i=0;i<Math.min(4,cap-bits.length);i++)
+  bits.push(0);
+
+ while(bits.length%8)bits.push(0);
+
+ let data=[];
+
+ for(let i=0;i<bits.length;i+=8){
+  let x=0;
+
+  for(let j=0;j<8;j++)
+   x=x*2+bits[i+j];
+
+  data.push(x);
+ }
+
+ let p=0;
+
+ while(data.length<dc)
+  data.push(p++%2?0x11:0xec);
+
+ return data.concat(rsRemainder(data,ec));
+}
+
+function qrFormat(mask){
+ const d=8|mask;
+ let r=d<<10;
+
+ for(let i=14;i>=10;i--)
+  if((r>>>i)&1)r^=0x537<<(i-10);
+
+ return((d<<10)|r)^0x5412;
+}
+
+function makeQRMatrix(bytes){
+ const caps=[17,32,53,78];
+ const dc=[19,34,55,80];
+ const ec=[7,10,15,20];
+
+ const vi=caps.findIndex(c=>bytes.length<=c);
+
+ if(vi<0)
+  throw Error("Text is too long. Maximum 78 UTF-8 bytes.");
+
+ const ver=vi+1,n=17+4*ver,code=qrBits(bytes,dc[vi],ec[vi]);
+
+ let m=Array.from({length:n},()=>Array(n).fill(false));
+ let fn=Array.from({length:n},()=>Array(n).fill(false));
+
+ function set(x,y,v){
+  if(x>=0&&y>=0&&x<n&&y<n){
+   m[y][x]=!!v;
+   fn[y][x]=true;
+  }
+ }
+
+ function finder(cx,cy){
+  for(let dy=-1;dy<=7;dy++)
+   for(let dx=-1;dx<=7;dx++){
+    const x=cx+dx,y=cy+dy;
+    const inside=dx>=0&&dx<=6&&dy>=0&&dy<=6;
+
+    set(x,y,inside&&(dx===0||dx===6||dy===0||dy===6||(dx>=2&&dx<=4&&dy>=2&&dy<=4)));
+   }
+ }
+
+ finder(0,0);
+ finder(n-7,0);
+ finder(0,n-7);
+
+ for(let i=8;i<n-8;i++){
+  set(6,i,i%2===0);
+  set(i,6,i%2===0);
+ }
+
+ const align={2:[6,18],3:[6,22],4:[6,26]}[ver]||[];
+
+ for(const y of align)
+  for(const x of align){
+   if(fn[y][x])continue;
+
+   for(let dy=-2;dy<=2;dy++)
+    for(let dx=-2;dx<=2;dx++)
+     set(x+dx,y+dy,Math.max(Math.abs(dx),Math.abs(dy))!==1);
+  }
+
+ const f1=[],f2=[];
+
+ for(let i=0;i<6;i++)f1.push([8,i]);
+
+ f1.push([8,7],[8,8],[7,8]);
+
+ for(let i=9;i<15;i++)f1.push([14-i,8]);
+
+ for(let i=0;i<8;i++)f2.push([n-1-i,8]);
+
+ for(let i=8;i<15;i++)f2.push([8,n-15+i]);
+
+ for(const [x,y] of f1.concat(f2))
+  set(x,y,false);
+
+ set(8,n-8,true);
+
+ let bit=0,up=true;
+
+ for(let right=n-1;right>=1;right-=2){
+  if(right===6)right--;
+
+  for(let v=0;v<n;v++){
+   const y=up?n-1-v:v;
+
+   for(let j=0;j<2;j++){
+    const x=right-j;
+
+    if(!fn[y][x]){
+     m[y][x]=bit<code.length*8?((code[bit>>>3]>>>(7-(bit&7)))&1)!==0:false;
+     bit++;
+    }
+   }
+  }
+
+  up=!up;
+ }
+
+ let best=null,bscore=Infinity;
+
+ for(let mask=0;mask<8;mask++){
+  let a=m.map(r=>r.slice());
+
+  for(let y=0;y<n;y++)
+   for(let x=0;x<n;x++)
+    if(!fn[y][x]){
+     let inv=false;
+
+     switch(mask){
+      case 0:inv=(x+y)%2===0;break;
+      case 1:inv=y%2===0;break;
+      case 2:inv=x%3===0;break;
+      case 3:inv=(x+y)%3===0;break;
+      case 4:inv=(Math.floor(y/2)+Math.floor(x/3))%2===0;break;
+      case 5:inv=(x*y)%2+(x*y)%3===0;break;
+      case 6:inv=((x*y)%2+(x*y)%3)%2===0;break;
+      case 7:inv=((x+y)%2+(x*y)%3)%2===0;break;
+     }
+
+     if(inv)a[y][x]=!a[y][x];
+    }
+
+  const fmt=qrFormat(mask);
+
+  f1.forEach(([x,y],i)=>a[y][x]=((fmt>>>i)&1)!==0);
+  f2.forEach(([x,y],i)=>a[y][x]=((fmt>>>i)&1)!==0);
+
+  a[n-8][8]=true;
+
+  let score=0;
+
+  for(let y=0;y<n;y++)
+   for(let x=0;x<n;x++)
+    if(x<n-1&&y<n-1&&a[y][x]===a[y][x+1]&&a[y][x]===a[y+1][x]&&a[y][x]===a[y+1][x+1])
+     score+=3;
+
+  const dark=a.flat().filter(Boolean).length;
+
+  score+=Math.floor(Math.abs(dark*100/(n*n)-50)/5)*10;
+
+  if(score<bscore){
+   bscore=score;
+   best=a;
+  }
+ }
+
+ return best;
+}
+
+function makeQR(){
+ const s=$("qrText").value;
+
+ if(!s)
+  return $("qrStatus").textContent="Enter some text first.";
+
+ try{
+  const bytes=new TextEncoder().encode(s);
+  const m=makeQRMatrix(bytes);
+
+  const scale=8,q=4,n=m.length,size=(n+q*2)*scale,c=$("qrCanvas");
+
+  c.width=size;
+  c.height=size;
+
+  const ctx=c.getContext("2d");
+
+  ctx.fillStyle="#fff";
+  ctx.fillRect(0,0,size,size);
+
+  ctx.fillStyle="#000";
+
+  for(let y=0;y<n;y++)
+   for(let x=0;x<n;x++)
+    if(m[y][x])
+     ctx.fillRect((x+q)*scale,(y+q)*scale,scale,scale);
+
+  $("qrStatus").textContent="QR code created on this device.";
+
+ }catch(e){
+  $("qrStatus").textContent=e.message;
+ }
+}
+
+function downloadQR(){
+ const c=$("qrCanvas");
+
+ if(!c.width)
+  return alert("Generate a QR code first.");
+
+ const a=document.createElement("a");
+
+ a.download="pockettools-qr.png";
+ a.href=c.toDataURL("image/png");
+ a.click();
+}
+
+/* COLOUR MAKER */
+function rgbToHsl(r,g,b){
+ r/=255;
+ g/=255;
+ b/=255;
+
+ const max=Math.max(r,g,b),min=Math.min(r,g,b),d=max-min;
+
+ let h=0,s=0,l=(max+min)/2;
+
+ if(d){
+  s=d/(1-Math.abs(2*l-1));
+
+  switch(max){
+   case r:h=((g-b)/d)%6;break;
+   case g:h=(b-r)/d+2;break;
+   default:h=(r-g)/d+4;
+  }
+
+  h*=60;
+  if(h<0)h+=360;
+ }
+
+ return[Math.round(h),Math.round(s*100),Math.round(l*100)];
+}
+
+function showColor(){
+ const hex=$("colourInput").value;
+
+ $("hexValue").value=hex;
+ $("colorPreview").style.background=hex;
+
+ const r=parseInt(hex.slice(1,3),16);
+ const g=parseInt(hex.slice(3,5),16);
+ const b=parseInt(hex.slice(5,7),16);
+
+ const h=rgbToHsl(r,g,b);
+
+ show("colorValues",`RGB: rgb(${r}, ${g}, ${b})<br>HSL: hsl(${h[0]}, ${h[1]}%, ${h[2]}%)`);
+}
+
+function hexChanged(){
+ const v=$("hexValue").value.trim();
+
+ if(/^#[0-9a-fA-F]{6}$/.test(v)){
+  $("colourInput").value=v;
+  showColor();
+ }
+}
+
+function copyColor(type){
+ const hex=$("colourInput").value;
+
+ const r=parseInt(hex.slice(1,3),16);
+ const g=parseInt(hex.slice(3,5),16);
+ const b=parseInt(hex.slice(5,7),16);
+
+ const h=rgbToHsl(r,g,b);
+
+ copyString(type==="rgb"
+  ?`rgb(${r}, ${g}, ${b})`
+  :`hsl(${h[0]}, ${h[1]}%, ${h[2]}%)`);
+}
+
+const palette=[
+ "#6657e8","#e85d75","#f2a541","#24a17a","#2484c6",
+ "#171c2e","#e7eaf2","#f2c6dc","#80b7a5","#b8a5ed"
+];
+
+$("swatches").innerHTML=palette.map(c=>
+ `<button class="swatch" style="background:${c}" title="${c}" onclick="chooseColor('${c}')"></button>`
+).join("");
+
+function chooseColor(c){
+ $("colourInput").value=c;
+ showColor();
+}
+
+showColor();
+
+/* GPA CALCULATOR */
+const grades5=[
+ ["A",5],["B",4],["C",3],["D",2],["E",1],["F",0]
+];
+
+const grades4=[
+ ["A",4],["B",3],["C",2],["D",1],["F",0]
+];
+
+function gradeOptions(){
+ return($("gScale").value==="5"?grades5:grades4)
+  .map(([g,v])=>`<option value="${v}">${g}</option>`)
+  .join("");
+}
+
+function addCourse(){
+ const row=document.createElement("div");
+
+ row.className="course";
+
+ row.innerHTML=`
+ <input aria-label="Course name" placeholder="Course name">
+ <input type="number" min="0.1" step="0.1" value="3" aria-label="Credits">
+ <select aria-label="Grade">${gradeOptions()}</select>
+ <button type="button" aria-label="Remove course">×</button>`;
+
+ row.querySelector("button").onclick=()=>row.remove();
+
+ $("courses").appendChild(row);
+}
+
+function refreshGrades(){
+ $("courses").querySelectorAll("select").forEach(s=>{
+  const old=s.value;
+
+  s.innerHTML=gradeOptions();
+
+  if([...s.options].some(o=>o.value===old))
+   s.value=old;
+ });
+}
+
+function resetCourses(){
+ $("courses").innerHTML="";
+
+ addCourse();
+ addCourse();
+ addCourse();
+
+ show("gResult","Add courses to calculate your GPA.");
+}
+
+function gpaCalc(){
+ const rows=[...$("courses").children];
+
+ if(!rows.length)
+  return show("gResult","Add at least one course.");
+
+ let points=0,credits=0,simple=0,count=0;
+
+ for(const row of rows){
+  const c=Number(row.querySelector('input[type="number"]').value);
+  const g=Number(row.querySelector("select").value);
+
+  if(!Number.isFinite(c)||c<=0)
+   return show("gResult","Each course needs valid credits greater than zero.");
+
+  points+=g*c;
+  credits+=c;
+  simple+=g;
+  count++;
+ }
+
+ const weighted=points/credits;
+ const average=simple/count;
+
+ const result=$("gMode").value==="simple"?average:weighted;
+
+ show("gResult",`<strong>GPA: ${result.toFixed(2)} / ${$("gScale").value}</strong><br>Credit-weighted GPA: ${weighted.toFixed(2)}<br>Simple average: ${average.toFixed(2)}<br>Total credits: ${credits}`);
+}
+
+resetCourses();
+
+</script>
+</body>
+</html>
